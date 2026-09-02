@@ -5,6 +5,7 @@ from src.config import (
     get_available_groq_models,
     get_default_model,
     get_groq_api_key,
+    get_api_key_source,
     CHROMA_PERSIST_DIR
 )
 from src.rag.vector_store import initialize_vector_store
@@ -752,7 +753,7 @@ def render_input_page(env_key, selected_model, selected_preset):
     # Execution Trigger Handling: Immediately transition to dedicated Results page for live loading state
     if generate_btn:
         if not env_key:
-            st.error("⚠️ Groq API Key not detected. Please configure `GROQ_API_KEY` in your local `.env` file in the project root to generate PRDs.")
+            st.error("⚠️ Groq API Key not detected. Please configure `GROQ_API_KEY` in your local `.env` file or Streamlit Cloud Secrets to generate PRDs.")
             return
 
         if not product_name.strip() or not product_idea.strip():
@@ -1126,18 +1127,21 @@ def main():
         st.markdown("---")
         st.subheader("🔑 LLM Configuration")
         
-        # Secure API Key loading from .env
+        # Secure API Key loading from Streamlit Secrets or .env
         env_key = get_groq_api_key()
+        key_source = get_api_key_source()
         available_models = get_available_groq_models(env_key)
         default_model = get_default_model(env_key)
 
         if env_key:
-            st.markdown('<span class="status-badge-chip">🔒 API Key Connected (.env)</span>', unsafe_allow_html=True)
+            source_label = f" ({key_source})" if key_source else ""
+            st.markdown(f'<span class="status-badge-chip">🔒 API Key Connected{source_label}</span>', unsafe_allow_html=True)
         else:
             st.warning(
                 "**Groq API Key Required**\n\n"
-                "Add your API key to the local `.env` file in the project root:\n\n"
-                "`GROQ_API_KEY=gsk_...`\n\n"
+                "Configure `GROQ_API_KEY` via:\n"
+                "- **Streamlit Cloud**: App Settings &rarr; Secrets (`GROQ_API_KEY = \"gsk_...\"`)\n"
+                "- **Local Dev**: `.env` file (`GROQ_API_KEY=gsk_...`)\n\n"
                 "*Get a free key from [console.groq.com](https://console.groq.com).* ",
                 icon="⚠️"
             )

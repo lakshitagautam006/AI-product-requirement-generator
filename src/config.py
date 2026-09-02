@@ -28,15 +28,74 @@ EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
 
 def get_groq_api_key(override_key: Optional[str] = None) -> str:
-    """Retrieve Groq API key from argument or environment variable, reloading .env if present."""
+    """
+    Retrieve Groq API key securely with deployment-safe precedence:
+    1. Direct override argument (if provided and valid)
+    2. Streamlit Secrets (st.secrets["GROQ_API_KEY"]) when deployed on Streamlit Community Cloud
+    3. Local .env file or system environment variable (os.getenv("GROQ_API_KEY"))
+    """
+    # 1. Check direct override parameter
     if override_key and override_key.strip():
         val = override_key.strip()
         return "" if val == "your_groq_api_key_here" else val
-    
-    # Reload .env in case user updated it recently
-    load_dotenv(dotenv_path=PROJECT_ROOT / ".env", override=True)
+
+    # 2. Check Streamlit secrets (for Streamlit Community Cloud deployment)
+    try:
+        import streamlit as st
+        if hasattr(st, "secrets"):
+            # Direct key in secrets
+            if "GROQ_API_KEY" in st.secrets:
+                val = str(st.secrets["GROQ_API_KEY"]).strip()
+                if val and val != "your_groq_api_key_here":
+                    return val
+
+            # Also check common nested sections (e.g., [general] or [groq])
+            for section in ["general", "groq"]:
+                if section in st.secrets:
+                    sec_obj = st.secrets[section]
+                    if hasattr(sec_obj, "get"):
+                        sec_val = str(sec_obj.get("GROQ_API_KEY", "") or sec_obj.get("api_key", "")).strip()
+                        if sec_val and sec_val != "your_groq_api_key_here":
+                            return sec_val
+    except Exception:
+        # Ignore when secrets.toml is not present (e.g. during local runs or non-streamlit CLI scripts)
+        pass
+
+    # 3. Reload and check local .env / environment variables
+    try:
+        load_dotenv(dotenv_path=PROJECT_ROOT / ".env", override=True)
+    except Exception:
+        pass
+
     val = os.getenv("GROQ_API_KEY", "").strip()
     return "" if val == "your_groq_api_key_here" else val
+
+
+def get_api_key_source() -> str:
+    """
+    Identify the source of the active API key for deployment observability:
+    Returns 'Streamlit Secrets', '.env', or '' (if key not configured).
+    """
+    try:
+        import streamlit as st
+        if hasattr(st, "secrets"):
+            if "GROQ_API_KEY" in st.secrets:
+                val = str(st.secrets["GROQ_API_KEY"]).strip()
+                if val and val != "your_groq_api_key_here":
+                    return "Streamlit Secrets"
+            for section in ["general", "groq"]:
+                if section in st.secrets and hasattr(st.secrets[section], "get"):
+                    sec_val = str(st.secrets[section].get("GROQ_API_KEY", "") or st.secrets[section].get("api_key", "")).strip()
+                    if sec_val and sec_val != "your_groq_api_key_here":
+                        return "Streamlit Secrets"
+    except Exception:
+        pass
+
+    val = os.getenv("GROQ_API_KEY", "").strip()
+    if val and val != "your_groq_api_key_here":
+        return ".env"
+
+    return ""
 
 
 def get_available_groq_models(api_key: Optional[str] = None) -> List[str]:

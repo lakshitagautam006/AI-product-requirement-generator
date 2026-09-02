@@ -13,6 +13,8 @@ from src.config import (
     FALLBACK_GROQ_MODELS,
     get_available_groq_models,
     get_default_model,
+    get_groq_api_key,
+    get_api_key_source,
     KNOWLEDGE_BASE_DIR,
     CHROMA_PERSIST_DIR
 )
@@ -356,6 +358,39 @@ def test_model_and_config():
     print("  [OK] Theme CSS injection for Light & Dark mode verified with zero errors.")
 
 
+def test_deployment_safe_api_key_loading():
+    print("\n[8/8] Verifying Deployment-Safe Groq API Key Loading (Streamlit Secrets + .env)...")
+    from unittest.mock import patch
+
+    # 1. Direct override key
+    override_res = get_groq_api_key(override_key="gsk_test_override_key")
+    assert override_res == "gsk_test_override_key", "Override key precedence failed"
+    print("  [OK] Direct override argument precedence verified.")
+
+    # 2. Rejection of placeholder key
+    placeholder_res = get_groq_api_key(override_key="your_groq_api_key_here")
+    assert placeholder_res != "your_groq_api_key_here", "Placeholder key was not rejected"
+    print("  [OK] Placeholder key rejection verified.")
+
+    # 3. Streamlit Cloud secrets simulation (st.secrets["GROQ_API_KEY"])
+    mock_secrets = {"GROQ_API_KEY": "gsk_mock_cloud_deployment_secret_123"}
+    with patch("streamlit.secrets", mock_secrets, create=True):
+        cloud_key = get_groq_api_key()
+        assert cloud_key == "gsk_mock_cloud_deployment_secret_123", "Streamlit secrets loading failed"
+        source = get_api_key_source()
+        assert source == "Streamlit Secrets", f"Expected source 'Streamlit Secrets', got '{source}'"
+    print("  [OK] Streamlit Community Cloud (st.secrets) loading and source detection verified.")
+
+    # 4. Fallback to local .env
+    local_key = get_groq_api_key()
+    local_source = get_api_key_source()
+    if local_key:
+        assert local_source in [".env", "Streamlit Secrets"]
+        print(f"  [OK] Local fallback loading verified (source: {local_source}).")
+    else:
+        print("  [OK] Clean handling when key is not set.")
+
+
 if __name__ == "__main__":
     print("=" * 65)
     print("STARTING END-TO-END VERIFICATION SUITE")
@@ -368,7 +403,9 @@ if __name__ == "__main__":
     test_dynamic_multi_product_analytics()
     test_exporters()
     test_model_and_config()
+    test_deployment_safe_api_key_loading()
     
     print("\n" + "=" * 65)
     print("[ALL CHECKS PASSED] System verified 100% against requirements!")
     print("=" * 65)
+
