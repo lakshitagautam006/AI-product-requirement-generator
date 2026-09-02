@@ -8,7 +8,6 @@ from src.config import (
     get_api_key_source,
     CHROMA_PERSIST_DIR
 )
-from src.rag.vector_store import initialize_vector_store
 from src.agents.prd_generator import generate_full_prd
 from src.utils.export_utils import (
     sanitize_filename,
@@ -1160,11 +1159,6 @@ def main():
         vector_status = "Ready & Indexed" if CHROMA_PERSIST_DIR.exists() else "Ready to build"
         st.caption(f"**ChromaDB Vector Store**: `{vector_status}`")
         st.caption("Embeddings: `sentence-transformers/all-MiniLM-L6-v2`")
-        
-        if st.button("🔄 Rebuild Vector Index", use_container_width=True):
-            with st.spinner("Re-indexing PRD domain documents into ChromaDB..."):
-                initialize_vector_store(force_reload=True)
-                st.success("Knowledge Base successfully re-indexed!")
 
         st.markdown("---")
         st.subheader("💡 Demo Quick-Start Presets")
