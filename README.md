@@ -4,6 +4,14 @@ An intelligent, multi-agent artificial intelligence application designed to tran
 
 ---
 
+## 🚀 Live Demo
+
+Try the deployed application:
+
+[AI PRD Generator – Live Demo](https://ai-prd-generator-006.streamlit.app/)
+
+---
+
 ## 📌 Problem Statement
 
 In modern software development and agile product workflows, drafting comprehensive Product Requirement Documents (PRDs) is often:
@@ -48,38 +56,22 @@ The **AI Product Requirement Generator** bridges the gap between vision and tech
 
 ```mermaid
 flowchart TD
-    User([User: Product Concept & Parameters]) --> UI[Streamlit Frontend: Input View]
-    
-    subgraph RAG [RAG Knowledge Base & ChromaDB]
-        Docs[("Knowledge Docs:\n- prd_standards.md\n- nfr_guidelines.md\n- risk_framework.md")]
-        Embeddings["sentence-transformers/all-MiniLM-L6-v2\n(Local CPU Embeddings)"]
-        Docs --> Embeddings
-        Embeddings --> ChromaDB[(Vector Store: ChromaDB)]
-    end
-    
-    UI -->|Click 'Generate Structured PRD'| Nav[Navigate to Dedicated Results Page]
-    Nav --> Loading[Live Pipeline Progress & Loading State]
-    
-    subgraph Pipeline [Dual-Agent AI Pipeline via Groq]
-        ChromaDB -->|Retrieve Persona & Problem Guidelines| Retriever1[Semantic Retriever 1]
-        Retriever1 --> BA_Agent["1. Business Analyst Agent\n(Groq LPU)"]
-        BA_Agent -->|Problem Statement, Scope, Personas| Intermediate[BA Analysis Context]
-        
-        Intermediate --> PM_Agent
-        ChromaDB -->|Retrieve NFR & Risk Matrix Guidelines| Retriever2[Semantic Retriever 2]
-        Retriever2 --> PM_Agent["2. Product Manager Agent\n(Groq LPU)"]
-        PM_Agent -->|INVEST Stories, Specs, NFRs, Risks| AssembledPRD[Structured PRD Markdown]
-    end
-    
-    Loading --> Pipeline
-    Pipeline --> ResultsView[Dedicated PRD Results Page]
-    
-    subgraph OutputView [Dedicated PRD Results Page]
-        ResultsView --> Analytics[Quality & Scope Analytics Bar]
-        ResultsView --> Tabs[8-Tab Deep Document Explorer]
-        ResultsView --> Exports[Export Toolbar: Markdown / HTML / JSON]
-    end
+    A["👤 User / Product Idea"] --> B["🖥️ Streamlit UI"]
+    B --> C["📚 RAG Knowledge Base<br/>(ChromaDB + Knowledge Documents)"]
+    C --> D["⚡ Groq LLM + AI Agent Workflow<br/>(Business Analyst → Product Manager)"]
+    D --> E["📋 Structured PRD"]
+    E --> F["📊 Analytics & Export"]
 ```
+
+### High-Level Workflow Breakdown
+1. **User / Product Idea**: The user inputs the product concept, target domain, and optional technical constraints.
+2. **Streamlit UI**: Coordinates the user experience across dedicated input and results views with real-time generation feedback.
+3. **RAG Knowledge Base**: Retrieves domain-specific engineering standards, NFR guidelines, and risk frameworks semantically from local ChromaDB storage.
+4. **Groq LLM + AI Agent Workflow**:
+   - **Business Analyst (BA) Agent**: Conducts problem decomposition, market analysis, and user persona creation.
+   - **Product Manager (PM) Agent**: Translates business context into INVEST user stories, functional requirements, NFRs, and risk matrices.
+5. **Structured PRD**: Assembles an industry-standard, execution-ready document.
+6. **Analytics & Export**: Derives real-time document quality metrics and provides one-click exports in Markdown, HTML, and JSON formats.
 
 ---
 
