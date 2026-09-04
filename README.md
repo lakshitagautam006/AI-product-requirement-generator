@@ -12,6 +12,14 @@ Try the deployed application:
 
 ---
 
+## 🎥 Demo Video
+
+Watch an end-to-end walkthrough demonstrating dual-agent PRD generation, real-time RAG grounding, dynamic analytics, and multi-format exports:
+
+[AI PRD Generator – Demo Video](docs/AI_PRD_Generator_Demo.mp4)
+
+---
+
 ## 📌 Problem Statement
 
 In modern software development and agile product workflows, drafting comprehensive Product Requirement Documents (PRDs) is often:
