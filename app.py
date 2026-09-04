@@ -160,6 +160,7 @@ def inject_comprehensive_theme_css(theme_mode: str):
     <style>
         /* ==========================================================
            0. HIDE DEFAULT STREAMLIT CHROME (Deploy button, MainMenu, Footer)
+           Keep stToolbar and stExpandSidebarButton accessible
            ========================================================== */
         #MainMenu,
         div[data-testid="stMainMenu"],
@@ -168,8 +169,6 @@ def inject_comprehensive_theme_css(theme_mode: str):
         div[data-testid="stToolbarActions"],
         div[data-testid="stDecoration"],
         div[data-testid="stStatusWidget"],
-        div[data-testid="stHeaderActionElements"],
-        div[data-testid="stToolbar"],
         footer,
         div[data-testid="stFooter"] {{
             display: none !important;
@@ -178,6 +177,88 @@ def inject_comprehensive_theme_css(theme_mode: str):
 
         header[data-testid="stHeader"] {{
             background-color: transparent !important;
+            pointer-events: none !important;
+            height: 3.5rem !important;
+            z-index: 99990 !important;
+        }}
+
+        div[data-testid="stToolbar"] {{
+            background: transparent !important;
+            pointer-events: none !important;
+        }}
+
+        /* ==========================================================
+           0B. ALWAYS-ACCESSIBLE "☰ Show Sidebar" TOGGLE BUTTON
+           Appears in the main app area when the sidebar is hidden/collapsed
+           ========================================================== */
+        button[data-testid="stExpandSidebarButton"],
+        div[data-testid="stSidebarCollapsedControl"] button,
+        div[data-testid="collapsedControl"] button {{
+            display: inline-flex !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+            opacity: 1 !important;
+            align-items: center !important;
+            justify-content: center !important;
+            position: fixed !important;
+            top: 14px !important;
+            left: 16px !important;
+            z-index: 999999 !important;
+            background-color: {c_bg_card} !important;
+            border: 1px solid {c_border} !important;
+            border-radius: 8px !important;
+            padding: 6px 14px !important;
+            color: {c_text_primary} !important;
+            font-size: 0.88rem !important;
+            font-weight: 600 !important;
+            font-family: inherit !important;
+            cursor: pointer !important;
+            box-shadow: {box_shadow_card} !important;
+            transition: all 0.2s ease-in-out !important;
+            height: auto !important;
+            width: auto !important;
+        }}
+
+        button[data-testid="stExpandSidebarButton"]:hover,
+        div[data-testid="stSidebarCollapsedControl"] button:hover,
+        div[data-testid="collapsedControl"] button:hover {{
+            background-color: {c_btn_sec_hover} !important;
+            border-color: {c_border_focus} !important;
+            color: {c_text_accent} !important;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15) !important;
+            transform: translateY(-1px) !important;
+        }}
+
+        /* Hide the default tiny double arrow icon */
+        button[data-testid="stExpandSidebarButton"] svg,
+        div[data-testid="stSidebarCollapsedControl"] svg,
+        div[data-testid="collapsedControl"] svg {{
+            display: none !important;
+        }}
+
+        /* Display clean, prominent "☰ Show Sidebar" label */
+        button[data-testid="stExpandSidebarButton"]::after,
+        div[data-testid="stSidebarCollapsedControl"] button::after,
+        div[data-testid="collapsedControl"] button::after {{
+            content: "☰ Show Sidebar" !important;
+            font-size: 0.88rem !important;
+            font-weight: 600 !important;
+            color: inherit !important;
+            display: inline-block !important;
+        }}
+
+        /* Ensure the collapse button inside the sidebar remains visible and styled */
+        section[data-testid="stSidebar"] button[data-testid="stSidebarCollapseButton"],
+        section[data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] {{
+            color: {c_text_primary} !important;
+            border-radius: 6px !important;
+            transition: all 0.2s ease !important;
+        }}
+
+        section[data-testid="stSidebar"] button[data-testid="stSidebarCollapseButton"]:hover,
+        section[data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"]:hover {{
+            color: {c_text_accent} !important;
+            background-color: {c_btn_sec_hover} !important;
         }}
 
         /* Keyframes for loading icon spin */
