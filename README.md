@@ -20,6 +20,14 @@ Watch an end-to-end walkthrough demonstrating dual-agent PRD generation, real-ti
 
 ---
 
+## 📄 Project Report
+
+Read the comprehensive project report detailing the system architecture, dual-agent methodology, RAG implementation, and evaluation results:
+
+[AI PRD Generator – Project Report (PDF)](docs/Project_Report.pdf)
+
+---
+
 ## 📌 Problem Statement
 
 In modern software development and agile product workflows, drafting comprehensive Product Requirement Documents (PRDs) is often:
@@ -114,44 +122,6 @@ The RAG subsystem eliminates hallucinated structures by injecting verified templ
 | **Embeddings** | [Hugging Face Sentence-Transformers](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) | Local 384-dimensional dense semantic embeddings |
 | **Configuration** | [python-dotenv](https://github.com/theskumar/python-dotenv) | Secure local environment key management |
 | **Data Validation** | [Pydantic](https://docs.pydantic.dev/) | Structured data integrity and schema validation |
-
----
-
-## 📂 Project Structure
-
-```
-AI-Product-Requirement-Generator/
-├── data/
-│   └── knowledge_base/               # Knowledge docs for RAG grounding
-│       ├── nfr_guidelines.md         # Non-Functional Requirements benchmarks
-│       ├── prd_standards.md          # Best practices for PRDs & INVEST stories
-│       └── risk_framework.md         # Risk assessment & mitigation taxonomy
-├── src/
-│   ├── __init__.py
-│   ├── config.py                     # App configuration & dynamic model resolver
-│   ├── agents/
-│   │   ├── __init__.py
-│   │   ├── ba_agent.py               # Business Analyst agent chain
-│   │   ├── pm_agent.py               # Product Manager agent chain
-│   │   ├── prd_generator.py          # End-to-end dual-agent pipeline coordinator
-│   │   └── prompts.py                # Specialized prompts for BA and PM agents
-│   ├── rag/
-│   │   ├── __init__.py
-│   │   ├── retriever.py              # Semantic context retriever
-│   │   └── vector_store.py           # ChromaDB document ingestion & embeddings
-│   └── utils/
-│       ├── __init__.py
-│       └── export_utils.py           # Section parser, metric counters & exporters
-├── tests/
-│   ├── test_e2e_comprehensive.py     # 7-stage end-to-end verification suite
-│   ├── test_pipeline_dryrun.py       # Pipeline simulation test
-│   └── test_rag.py                   # ChromaDB retrieval unit test
-├── .env.example                      # Safe template for local configuration
-├── .gitignore                        # Comprehensive GitHub ignore rules
-├── app.py                            # Streamlit web application & multi-view UI
-├── README.md                         # Project documentation
-└── requirements.txt                  # Python dependencies
-```
 
 ---
 
